@@ -23,3 +23,12 @@ exports.createUser = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+exports.getManagers = async (req, res) => {
+    try {
+        const managers = await User.find({ company: req.user.company, role: 'Manager' }).select('name _id');
+        res.json(managers);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};

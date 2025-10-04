@@ -19,3 +19,4 @@ app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/expenses', require('./routes/expenses'));
