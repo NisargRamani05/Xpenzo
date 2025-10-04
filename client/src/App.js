@@ -17,7 +17,8 @@ function App() {
       <AuthProvider>
         <Toaster position="top-center" reverseOrder={false} />
         <Navbar />
-        <main className="container" style={{ marginTop: "2rem" }}>
+  
+        <main className="container w-full mx-auto mt-8">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -52,4 +53,5 @@ function App() {
     </Router>
   );
 }
+
 export default App;
