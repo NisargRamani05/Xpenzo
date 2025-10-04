@@ -6,6 +6,7 @@ const ExpenseSchema = new mongoose.Schema({
   company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
   // Amount, Category, Description, Date
   amount: { type: Number, required: true },
+  currency: { type: String, required: true, uppercase: true, trim: true },
   category: { type: String, required: true },
   description: { type: String, required: true },
   date: { type: Date, default: Date.now },
