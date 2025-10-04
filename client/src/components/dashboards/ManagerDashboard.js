@@ -1,89 +1,93 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api/axiosConfig";
 import toast from "react-hot-toast";
-import "./Dashboard.css";
 
 const ManagerDashboard = () => {
   const [pendingExpenses, setPendingExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const fetchPendingExpenses = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get("/expenses/team-expenses");
-      setPendingExpenses(res.data);
-    } catch (err) {
-      console.error("Error fetching pending expenses:", err);
-      toast.error("Could not fetch pending expenses.");
-    }
-    setLoading(false);
-  };
+  const [summary, setSummary] = useState({ subordinateCount: 0 }); // State for analytics
 
   useEffect(() => {
-    fetchPendingExpenses();
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const [expensesRes, summaryRes] = await Promise.all([
+                api.get('/expenses/team-expenses'),
+                api.get('/analytics/manager')
+            ]);
+            setPendingExpenses(expensesRes.data);
+            setSummary(summaryRes.data);
+        } catch (err) {
+            console.error("Error fetching manager data:", err);
+            toast.error("Could not fetch dashboard data.");
+        }
+        setLoading(false);
+    };
+    fetchData();
   }, []);
 
   const handleUpdateStatus = async (expenseId, newStatus) => {
     const comments = newStatus === "Approved" ? "Approved by manager." : "Rejected by manager.";
     try {
       await api.put(`/expenses/${expenseId}/status`, { status: newStatus, comments });
-      toast.success(`Expense has been ${newStatus.toLowerCase()}.`); // <-- KEPT: The toast
-      fetchPendingExpenses();
+      toast.success(`Expense has been ${newStatus.toLowerCase()}.`);
+      // Refresh list after update
+      const expensesRes = await api.get('/expenses/team-expenses');
+      setPendingExpenses(expensesRes.data);
     } catch (err) {
-      console.error("Error updating expense status:", err);
-      toast.error("Error: Could not update status."); // <-- KEPT: The error toast
+      toast.error("Error: Could not update status.");
     }
   };
 
   return (
-    <div>
-      <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem" }}>
-        Manager Dashboard
-      </h1>
-      <div className="dashboard-section">
-        <h2>Pending Team Expenses</h2>
-        {loading && <p>Loading team expenses...</p>}
-        {!loading && (
-          <table className="expenses-table">
-            <thead>
-              {/* <-- CORRECTED: Added missing headers for alignment --> */}
-              <tr>
-                <th>Date</th>
-                <th>Submitted By</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Original Amount</th>
-                <th>Amount ({pendingExpenses[0]?.companyCurrency || "Default"})</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pendingExpenses.length > 0 ? (
-                pendingExpenses.map((expense) => (
-                  <tr key={expense._id}>
-                    <td>{new Date(expense.date).toLocaleDateString()}</td>
-                    <td>{expense.submittedBy.name}</td>
-                    <td>{expense.description}</td>
-                    <td>{expense.category}</td>
-                    <td>{expense.amount} {expense.currency}</td>
-                    <td>{expense.convertedAmount}</td>
-                    <td>
-                      <button onClick={() => handleUpdateStatus(expense._id, "Approved")} style={{ marginRight: "0.5rem", padding: "0.3rem 0.6rem", border: "none", borderRadius: "4px", backgroundColor: "#10b981", color: "white", cursor: "pointer" }}>
-                        Approve
-                      </button>
-                      <button onClick={() => handleUpdateStatus(expense._id, "Rejected")} style={{ padding: "0.3rem 0.6rem", border: "none", borderRadius: "4px", backgroundColor: "#ef4444", color: "white", cursor: "pointer" }}>
-                        Reject
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: "center", padding: "2rem" }}>No pending expenses.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+    <div className="space-y-8">
+      <h1 className="text-3xl font-bold text-gray-800">Manager Dashboard</h1>
+
+      {/* --- ANALYTICS SUMMARY SECTION --- */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-lg font-semibold text-gray-600">Employees Reporting to You</h2>
+        <p className="text-4xl font-bold text-gray-800 mt-2">{summary.subordinateCount}</p>
+      </div>
+
+      {/* --- PENDING EXPENSES TABLE (with Tailwind CSS) --- */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Pending Team Expenses</h2>
+        {loading ? <p>Loading team expenses...</p> : (
+            <div className="overflow-x-auto relative">
+                <table className="w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" className="py-3 px-6">Date</th>
+                            <th scope="col" className="py-3 px-6">Submitted By</th>
+                            <th scope="col" className="py-3 px-6">Description</th>
+                            <th scope="col" className="py-3 px-6">Original Amount</th>
+                            <th scope="col" className="py-3 px-6">Amount ({pendingExpenses[0]?.companyCurrency || 'Default'})</th>
+                            <th scope="col" className="py-3 px-6">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pendingExpenses.length > 0 ? (
+                            pendingExpenses.map((expense) => (
+                                <tr key={expense._id} className="bg-white border-b hover:bg-gray-50">
+                                    <td className="py-4 px-6">{new Date(expense.date).toLocaleDateString()}</td>
+                                    <td className="py-4 px-6 font-medium text-gray-900">{expense.submittedBy.name}</td>
+                                    <td className="py-4 px-6">{expense.description}</td>
+                                    <td className="py-4 px-6">{expense.amount} {expense.currency}</td>
+                                    <td className="py-4 px-6">{expense.convertedAmount}</td>
+                                    <td className="py-4 px-6 flex items-center gap-2">
+                                        <button onClick={() => handleUpdateStatus(expense._id, "Approved")} className="px-3 py-1 text-xs font-medium text-center text-white bg-green-600 rounded-lg hover:bg-green-700">Approve</button>
+                                        <button onClick={() => handleUpdateStatus(expense._id, "Rejected")} className="px-3 py-1 text-xs font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700">Reject</button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr className="bg-white border-b">
+                                <td colSpan="6" className="py-4 px-6 text-center text-gray-500">No pending expenses.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         )}
       </div>
     </div>
