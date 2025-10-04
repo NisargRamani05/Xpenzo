@@ -8,7 +8,8 @@ const {
     updateExpenseStatus,
     scanReceipt,
     getAllPendingExpenses,
-    forceUpdateStatusByAdmin
+    forceUpdateStatusByAdmin,
+    getCompletedExpenses
 } = require('../controllers/expenseController');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -26,5 +27,7 @@ router.put('/:id/status', auth, updateExpenseStatus);
 // Admin Override Routes
 router.get('/all-pending', [auth, admin], getAllPendingExpenses);
 router.put('/:id/force-status', [auth, admin], forceUpdateStatusByAdmin);
+
+router.get('/completed', auth, getCompletedExpenses);
 
 module.exports = router;

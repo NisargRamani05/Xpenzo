@@ -158,3 +158,21 @@ exports.forceUpdateStatusByAdmin = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+// @desc    Get all completed (Approved/Rejected) expenses for the company
+exports.getCompletedExpenses = async (req, res) => {
+    try {
+        const expenses = await Expense.find({ 
+            company: req.user.company, 
+            status: { $in: ['Approved', 'Rejected'] } 
+        })
+        .populate('submittedBy', 'name')
+        .populate('approvalPath.approver', 'name') // To show names in the history modal
+        .sort({ updatedAt: -1 }); // Sort by most recently completed
+
+        res.json(expenses);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
