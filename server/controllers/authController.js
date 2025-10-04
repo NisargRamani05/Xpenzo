@@ -3,37 +3,41 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Company = require('../models/Company');
 
-// @route   POST /api/auth/signup
-// @desc    Register a user, create a company, and return a token
 exports.signup = async (req, res) => {
   const { companyName, name, email, password } = req.body;
 
   try {
-    // 1. Check if user already exists
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
+    // 1. Check if company name already exists
+    let company = await Company.findOne({ name: companyName });
+    if (company) {
+      return res.status(400).json({ msg: 'A company with this name already exists.' });
     }
 
-    // 2. On first signup, a new Company and Admin User are auto-created 
+    // 2. Check if user email already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: 'User with this email already exists.' });
+    }
+
+    // 3. Create the new Company
     const newCompany = new Company({ name: companyName });
     await newCompany.save();
 
-    // 3. Create the new Admin user
+    // 4. Create the new Admin user
     user = new User({
       name,
       email,
       password,
       company: newCompany._id,
-      role: 'Admin' // First user of a new company is the Admin 
+      role: 'Admin' 
     });
 
-    // 4. Hash the password before saving
+    // 5. Hash the password before saving
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     await user.save();
 
-    // 5. Create and return a JWT (JSON Web Token)
+    // 6. Create and return a JWT
     const payload = {
       user: {
         id: user.id,
@@ -53,8 +57,6 @@ exports.signup = async (req, res) => {
   }
 };
 
-// @route   POST /api/auth/login
-// @desc    Authenticate user and get token
 exports.login = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -83,5 +85,26 @@ exports.login = async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
+    }
+};
+
+// @route   GET /api/auth/me
+// @desc    Get current user's profile
+// @access  Private
+exports.getMe = async (req, res) => {
+    try {
+        // Find user by ID from the token, populate company and manager details
+        const user = await User.findById(req.user.id)
+            .select('-password') // Exclude the password for security
+            .populate('company', 'name defaultCurrency') // Get company name and currency
+            .populate('manager', 'name'); // Get manager's name
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
 };

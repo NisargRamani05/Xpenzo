@@ -2,6 +2,43 @@ const Expense = require('../models/Expense');
 const User = require('../models/User');
 const axios = require('axios');
 const Company = require('../models/Company');
+const Tesseract = require('tesseract.js');
+
+// @desc    Scans a receipt image using OCR and returns extracted data
+exports.scanReceipt = async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ msg: 'No receipt image uploaded.' });
+    }
+
+    try {
+        const { data: { text } } = await Tesseract.recognize(
+            req.file.path,
+            'eng' // Language is English
+        );
+
+        // --- Basic Data Parsing (This can be improved) ---
+        let extractedAmount = null;
+        // Look for lines containing "Total" or "Amount" and then find a number
+        const lines = text.split('\n');
+        const totalLine = lines.find(line => line.toLowerCase().includes('total') || line.toLowerCase().includes('amount'));
+
+        if (totalLine) {
+            const match = totalLine.match(/(\d+\.\d{2})/); // Look for a number like 123.45
+            if (match) {
+                extractedAmount = parseFloat(match[0]);
+            }
+        }
+
+        res.json({
+            fullText: text,
+            extractedAmount: extractedAmount
+        });
+
+    } catch (err) {
+        console.error("OCR Error:", err.message);
+        res.status(500).send('Server Error');
+    }
+};
 
 // @desc    Employee submits a new expense claim
 exports.submitExpense = async (req, res) => {
