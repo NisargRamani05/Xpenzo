@@ -17,12 +17,12 @@ const LoginPage = () => {
   return (
     // Background updated to the theme's light cream color
     <div 
-      className="flex items-center justify-center min-h-screen bg-[#073737] bg-cover bg-center"
+      className="flex items-center  min-h-[91.5vh] bg-[#073737] "
     >
       {/* Card styled with a white background and subtle border */}
-      <div className="w-full max-w-md p-8 space-y-6 bg-[#F5F3E9] rounded-lg shadow-md border border-gray-200">
+      <div className="w-full max-w-md p-8 space-y-6">
         {/* Heading text color updated to dark teal */}
-        <h2 className="text-2xl font-bold text-center text-[#073737]">
+        <h2 className="text-2xl font-bold  text-[#FDFFD4]">
           Login to Your Account
         </h2>
         <form onSubmit={onSubmit} className="space-y-6">
@@ -31,7 +31,7 @@ const LoginPage = () => {
             <label
               htmlFor="email"
               // Text color updated
-              className="block mb-2 text-sm font-medium text-[#073737]"
+              className="block mb-2 text-sm font-medium text-[#FDFFD4]"
             >
               Email
             </label>
@@ -51,7 +51,7 @@ const LoginPage = () => {
             <label
               htmlFor="password"
               // Text color updated
-              className="block mb-2 text-sm font-medium text-[#073737]"
+              className="block mb-2 text-sm font-medium text-[#FDFFD4]"
             >
               Password
             </label>
@@ -70,15 +70,15 @@ const LoginPage = () => {
           <button
             type="submit"
             // Button color updated to the new main color
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-[#073737] border border-transparent rounded-md shadow-sm hover:bg-[#0a4f4f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#073737]"
+            className="bg-emerald-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-emerald-600 transition-all duration-300 transform"
           >
             Login
           </button>
         </form>
         {/* --- Link to Signup Page --- */}
-        <p className="text-sm text-center text-[#073737] mt-4">
+        <p className="text-sm text-[#FDFFD4] mt-4">
           Don't have an account?{' '}
-          <Link to="/signup" className="font-semibold underline hover:text-teal-800">
+          <Link to="/signup" className="font-semibold text-emerald-500 underline hover:text-[#FDFFD4]">
             Sign Up
           </Link>
         </p>

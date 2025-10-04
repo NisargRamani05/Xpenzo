@@ -63,17 +63,17 @@ const HomePage = () => {
   return (
     <div className="bg-[#073737] text-[#FDFFD4]">
       {/* Hero Section */}
-      <div className="text-center py-24 px-4 sm:px-6 lg:px-8 bg-[#0a4f4f] rounded-lg">
+      <div className=" h-[90vh] flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-[#0a4f4f] rounded-lg">
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-5xl md:text-6xl font-extrabold text-[#FDFFD4]">
-          Welcome to <span className="text-emerald-400">Expense Manager</span>
+          Welcome to <span className="text-emerald-400">xpenzo</span>
         </motion.h1>
-        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-[#FDFFD4]/80">
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="mt-6 w-full mx-auto text-lg md:text-xl text-[#FDFFD4]/80">
           The simplest way to track, manage, and report your team's business expenses. Focus on your work, not on paperwork.
         </motion.p>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="mt-10 flex justify-center gap-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="mt-10 flex w-full gap-4">
           <Link
             to="/signup"
-            className="inline-block bg-emerald-500 text-white font-semibold py-4 px-10 rounded-lg shadow-lg hover:bg-emerald-600 transition-all duration-300 transform hover:scale-110 animate-pulse"
+            className="inline-block bg-emerald-500 text-white font-semibold py-4 px-10 rounded-lg shadow-lg hover:bg-emerald-600 transition-all duration-300 transform hover:scale-105 animate-pulse"
           >
             Get Started for Free
           </Link>
@@ -88,9 +88,9 @@ const HomePage = () => {
       
       {/* Features Section */}
       <div className="py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection variants={fadeInUp}>
-            <div className="text-center">
+            <div className="">
               <h2 className="text-base font-semibold text-emerald-400 tracking-wide uppercase">Features</h2>
               <p className="mt-2 text-4xl font-extrabold text-[#FDFFD4] tracking-tight sm:text-5xl">
                 Everything you need, nothing you don't.
@@ -134,9 +134,9 @@ const HomePage = () => {
       
       {/* How It Works Section */}
       <div className="py-28 bg-[#0a4f4f]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection variants={fadeInUp}>
-              <div className="text-center mb-20">
+              <div className=" mb-20">
                   <h2 className="text-base font-semibold text-emerald-400 tracking-wide uppercase">How It Works</h2>
                   <p className="mt-2 text-4xl font-extrabold text-[#FDFFD4] tracking-tight sm:text-5xl">Get started in 3 simple steps</p>
               </div>
@@ -171,7 +171,7 @@ const HomePage = () => {
       {/* Testimonial Section */}
       <div className="py-28">
         <AnimatedSection variants={fadeInUp}>
-          <div className="max-w-4xl mx-auto text-center px-4">
+          <div className=" mx-auto px-8">
               <p className="text-3xl md:text-4xl font-medium text-[#FDFFD4]">
                   "Expense Manager has saved us over 10 hours a week on financial admin. It's incredibly intuitive and has streamlined our entire process."
               </p>
@@ -187,7 +187,7 @@ const HomePage = () => {
       {/* Final CTA Section */}
       <div className="bg-[#0a4f4f] py-28">
         <AnimatedSection variants={fadeInUp}>
-          <div className="max-w-4xl mx-auto text-center px-4">
+          <div className=" mx-auto px-8">
             <h2 className="text-4xl font-extrabold text-[#FDFFD4] sm:text-5xl">
               Ready to simplify your expenses?
             </h2>
