@@ -261,7 +261,7 @@ const AdminDashboard = () => {
                       </thead>
                       <tbody>
                         {allPendingExpenses.map(expense => (
-                          <tr key={expense._id} className="border-b hover:bg-gray-50 h-[72vh]">
+                          <tr key={expense._id} className="border-b hover:bg-gray-50">
                             <td className="py-4 px-6 font-medium text-gray-900">{expense.submittedBy.name}</td>
                             <td className="py-4 px-6">{expense.amount} {expense.currency}</td>
                             <td className="py-4 px-6 text-blue-600">{expense.approvalPath[expense.currentApproverIndex]?.approver.name}</td>
