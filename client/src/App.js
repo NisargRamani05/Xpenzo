@@ -7,11 +7,13 @@ import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 import DashboardPage from './pages/DashboardPage';
 import PrivateRoute from './components/PrivateRoute';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <Router>
       <AuthProvider> 
+        <Toaster position="top-center" reverseOrder={false} />
         <Navbar />
         <main className="container" style={{marginTop: '2rem'}}>
           <Routes>

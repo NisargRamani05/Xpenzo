@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 import '../../pages/AuthForm.css'; // We can reuse the form styling
+import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
     const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ const AdminDashboard = () => {
             const submissionData = role !== 'Employee' ? { ...formData, manager: undefined } : formData;
 
             await api.post('/users', submissionData);
+            toast.success(`Successfully created ${role}: ${name}`);
             setMessage(`Successfully created ${role}: ${name}`);
             // Clear form
             setFormData({ name: '', email: '', password: '', role: 'Employee', manager: '' });
@@ -45,6 +47,7 @@ const AdminDashboard = () => {
                 setManagers(res.data);
             }
         } catch (err) {
+            toast.error(err.response.data.msg || 'Could not create user');
             console.error("Error creating user:", err.response.data);
             setMessage(`Error: ${err.response.data.msg || 'Could not create user'}`);
         }
@@ -88,7 +91,7 @@ const AdminDashboard = () => {
                     )}
                     <button type="submit" className="submit-btn">Create User</button>
                 </form>
-                {message && <p style={{marginTop: '1rem', textAlign: 'center'}}>{message}</p>}
+                {/* {message && <p style={{marginTop: '1rem', textAlign: 'center'}}>{message}</p>} */}
             </div>
         </div>
     );

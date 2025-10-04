@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api/axiosConfig";
+import toast from "react-hot-toast";
 import "../../pages/AuthForm.css"; // Reuse form styles
 import "./Dashboard.css"; // Import dashboard styles
 
@@ -9,17 +10,20 @@ const EmployeeDashboard = () => {
     amount: "",
     category: "Other",
     description: "",
-    currency: "INR", // <-- ALREADY HERE, GOOD
+    currency: "INR",
   });
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchExpenses = async () => {
+    setLoading(true);
     try {
       const res = await api.get("/expenses/my-expenses");
       setExpenses(res.data);
     } catch (err) {
       console.error("Error fetching expenses:", err);
+      toast.error("Could not fetch expenses.");
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -34,15 +38,17 @@ const EmployeeDashboard = () => {
     e.preventDefault();
     try {
       await api.post("/expenses", formData);
-      setMessage("Expense submitted successfully!");
-      // Clear form and fetch updated expenses
-      setFormData({ amount: "", category: "Other", description: "", currency: "INR" }); // <-- CHANGED: Reset currency
+      toast.success("Expense submitted successfully!"); // <-- KEPT: The toast notification
+      setFormData({
+        amount: "",
+        category: "Other",
+        description: "",
+        currency: "INR",
+      });
       fetchExpenses();
-      setTimeout(() => setMessage(""), 3000);
     } catch (err) {
       console.error("Error submitting expense:", err.response.data);
-      setMessage("Error: Could not submit expense.");
-      setTimeout(() => setMessage(""), 3000);
+      toast.error("Error: Could not submit expense."); // <-- KEPT: The error toast
     }
   };
 
@@ -60,7 +66,6 @@ const EmployeeDashboard = () => {
               <label>Amount</label>
               <input type="number" name="amount" value={amount} onChange={onChange} required />
             </div>
-            {/* // <-- ADDED: Currency Input Field --> */}
             <div className="form-group">
               <label>Currency (3-letter code, e.g., USD)</label>
               <input type="text" name="currency" value={currency} onChange={onChange} required maxLength="3" />
@@ -82,38 +87,41 @@ const EmployeeDashboard = () => {
               Submit Expense
             </button>
           </form>
-          {message && <p style={{ marginTop: "1rem", textAlign: "center" }}>{message}</p>}
+          {/* <-- REMOVED: The old {message && ...} paragraph is gone */}
         </div>
       </div>
 
       <div className="dashboard-section">
         <h2>My Expenses</h2>
-        <table className="expenses-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Category</th>
-              <th>Original Amount</th> {/* <-- CHANGED: Header text */}
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {expenses.map((expense) => (
-              <tr key={expense._id}>
-                <td>{new Date(expense.date).toLocaleDateString()}</td>
-                <td>{expense.description}</td>
-                <td>{expense.category}</td>
-                <td>{expense.amount} {expense.currency}</td> {/* <-- CHANGED: Display amount with currency */}
-                <td>
-                  <span className={`status-badge status-${expense.status}`}>
-                    {expense.status}
-                  </span>
-                </td>
+        {loading && <p>Loading expenses...</p>}
+        {!loading && (
+          <table className="expenses-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Original Amount</th>
+                <th>Status</th>
+                <th>Manager's Comments</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {expenses.map((expense) => (
+                <tr key={expense._id}>
+                  <td>{new Date(expense.date).toLocaleDateString()}</td>
+                  <td>{expense.description}</td>
+                  <td>{expense.amount} {expense.currency}</td>
+                  <td>
+                    <span className={`status-badge status-${expense.status}`}>
+                      {expense.status}
+                    </span>
+                  </td>
+                  <td>{expense.comments}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
